@@ -3,6 +3,8 @@ from inline_markdown import (
     split_nodes_delimiter,
     extract_markdown_links,
     extract_markdown_images,
+    split_nodes_image,
+    split_nodes_link,
 )
 
 from textnode import (
@@ -11,6 +13,8 @@ from textnode import (
     text_type_bold,
     text_type_italic,
     text_type_code,
+    text_type_image,
+    text_type_link,
 )
 
 class TestInlineMarkdown(unittest.TestCase):
@@ -90,12 +94,74 @@ class TestInlineMarkdown(unittest.TestCase):
         )
     
     def test_extract_markdown_images(self):
-        matches = extract_markdown_images("Under a dome with an ![image](https://image.com/dome.pgn)")
-        self.assertListEqual([("image", "https://image.com/dome.pgn")], matches)
+        matches = extract_markdown_images("Under a dome with an ![image](https://image.com/dome.png)")
+        self.assertListEqual([("image", "https://image.com/dome.png")], matches)
     
     def test_extract_markdown_links(self):
         matches = extract_markdown_links("This is a dome with a [link](https://image.com)")
         self.assertListEqual([("link", "https://image.com")], matches)
+
+    def test_split_image(self):
+        node = TextNode(
+            "Under a dome with an ![image](https://image.com/dome.png)",
+            text_type_text,
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("Under a dome with an ", text_type_text),
+                TextNode("image", text_type_image, "https://image.com/dome.png"),
+            ],
+            new_nodes,
+        )
+
+    def test_split_image_single(self):
+        node = TextNode(
+            "![image](https://image.com/dome.png)",
+            text_type_text,
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("image", text_type_image, "https://image.com/dome.png"),
+            ],
+            new_nodes,
+        )
+
+    def test_split_images(self):
+        node = TextNode(
+            "Under a dome with an ![image](https://image.com/dome.png) and a ![bridge](https://image.com/bridge.png)",
+            text_type_text,
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("Under a dome with an ", text_type_text),
+                TextNode("image", text_type_image, "https://image.com/dome.png"),
+                TextNode(" and a ", text_type_text),
+                TextNode(
+                    "bridge", text_type_image, "https://image.com/bridge.png"
+                ),
+            ],
+            new_nodes,
+        )
+
+    def test_split_links(self):
+        node = TextNode(
+            "Under a dome with a [link](https://image.com) and [another link](https://imagenew.com) with a bridge that follows",
+            text_type_text,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("Under a dome with a ", text_type_text),
+                TextNode("link", text_type_link, "https://image.com"),
+                TextNode(" and ", text_type_text),
+                TextNode("another link", text_type_link, "https://imagenew.com"),
+                TextNode(" with a bridge that follows", text_type_text),
+            ],
+            new_nodes,
+        )
     
 if __name__ == "__main__":
     unittest.main()
