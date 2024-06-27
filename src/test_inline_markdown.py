@@ -5,6 +5,7 @@ from inline_markdown import (
     extract_markdown_images,
     split_nodes_image,
     split_nodes_link,
+    text_to_textnodes,
 )
 
 from textnode import (
@@ -161,6 +162,26 @@ class TestInlineMarkdown(unittest.TestCase):
                 TextNode(" with a bridge that follows", text_type_text),
             ],
             new_nodes,
+        )
+
+    def test_text_to_textnodes(self):
+        nodes = text_to_textnodes(
+            "Under a **dome** with a *bridge* and a coded `sign` and an ![image](https://image.com/dome.png) and a [link](https://image.com)"
+        )
+        self.assertListEqual(
+            [
+                TextNode("Under a ", text_type_text),
+                TextNode("dome", text_type_bold),
+                TextNode(" with a ", text_type_text),
+                TextNode("bridge", text_type_italic),
+                TextNode(" and a coded ", text_type_text),
+                TextNode("sign", text_type_code),
+                TextNode(" and an ", text_type_text),
+                TextNode("image", text_type_image, "https://image.com/dome.png"),
+                TextNode(" and a ", text_type_text),
+                TextNode("link", text_type_link, "https://image.com"),
+            ],
+            nodes,
         )
     
 if __name__ == "__main__":
