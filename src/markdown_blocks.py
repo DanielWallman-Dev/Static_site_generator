@@ -114,7 +114,7 @@ def code_to_html_node(block):
     text = block[3: -3]
     children = text_to_children(text)
     code = ParentNode("code", children)
-    return HTMLNode("pre", [code])
+    return ParentNode("pre", [code])
 
 def quote_to_html_node(block):
     lines = block.split("\n")
