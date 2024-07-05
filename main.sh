@@ -1,2 +1,3 @@
 python3 src/main.py
-cd public && python3 -m http.server 8888
+#cp ./static/favicon.ico ./public/favicon.ico
+python3 src/server.py
