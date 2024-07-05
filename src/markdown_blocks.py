@@ -143,7 +143,7 @@ def ulist_to_html_node(block):
     lines = block.split("\n")
     child_nodes = []
     for line in lines:
-        if not (line.startswith("- " or line.startswith("* "))):
+        if not line.startswith("- ") and not line.startswith("* "):
             raise ValueError("Invalid unordered list item")
         text = line[2:]
         children = text_to_children(text)
