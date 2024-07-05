@@ -145,7 +145,7 @@ def ulist_to_html_node(block):
     for line in lines:
         if not line.startswith("- ") and not line.startswith("* "):
             raise ValueError("Invalid unordered list item")
-        text = line[2:]
+        text = line[2:].strip()
         children = text_to_children(text)
         child_nodes.append(ParentNode("li", children))
     return ParentNode("ul", child_nodes)
